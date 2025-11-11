@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Arbre généalogique — Dieux égyptiens</title>
+  <title>L’art de l’Égypte ancienne</title>
   <style>
     body {
       font-family: 'Georgia', serif;
@@ -16,7 +16,6 @@
 
     header h1 {
       text-align: center;
-      margin: 0;
       font-size: 2.8em;
       color: #5a2a00;
       animation: fadeInDown 1.5s ease;
@@ -24,65 +23,153 @@
 
     header p {
       text-align: center;
-      margin-top: 10px;
       color: #7a4a1d;
+      max-width: 900px;
+      margin: 10px auto 40px auto;
+      line-height: 1.6em;
     }
 
-    /* Zone pour notes */
-    .notes {
-      min-height: 120px;
-      margin: 30px auto;
-      padding: 15px;
-      max-width: 1000px;
-      border: 2px dashed #8b4513;
+    /* --- Tree Styles --- */
+    .tree-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      background: #fff8f0;
+      border: 2px solid #d8b892;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      padding: 40px 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .level {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 30px;
+      position: relative;
+      margin-bottom: 50px;
+    }
+
+    .god {
+      background: #fffdf7;
+      border: 2px solid #d8b892;
       border-radius: 10px;
-      background: rgba(255, 248, 240, 0.6);
-      font-style: italic;
+      padding: 10px 15px;
+      width: 150px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      transition: transform 0.3s;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .god:hover {
+      transform: scale(1.05);
+    }
+
+    .god::before {
+      content: "";
+      position: absolute;
+      top: -25px;
+      left: 50%;
+      width: 2px;
+      height: 25px;
+      background: #8b4513;
+      transform: translateX(-50%);
+    }
+
+    .level:first-child .god::before {
+      display: none;
+    }
+
+    .god .icon {
+      font-size: 26px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .god h3 {
+      margin: 0;
+      font-size: 16px;
       color: #5a2a00;
     }
 
-    /* Tree container */
-    .tree {
-      background: #fff8f0;
-      padding: 28px;
-      border-radius: 18px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-      border: 2px solid #d8b892;
-      max-width: 1200px;
-      margin: auto;
+    .god small {
+      font-size: 12px;
+      color: #7a4a1d;
     }
 
-    .tree ul{padding-left:0;margin:0;list-style:none;display:flex;justify-content:center}
-    .tree li{position:relative;text-align:center;padding:12px 8px;}
-    .tree li::before{content:'';position:absolute;top:-20px;left:50%;width:2px;height:20px;background:#8b4513;transform:translateX(-50%)}
-    .tree > ul > li::before{display:none}
-
-    .children{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:12px}
-
-    .node{
-      background:#fff8f0;
-      border:2px solid #d8b892;
-      padding:12px;
-      border-radius:12px;
-      min-width:160px;
-      max-width:220px;
-      box-shadow:0 6px 20px rgba(0,0,0,0.15);
-      cursor:pointer;
-      transition:transform .28s ease, box-shadow .28s;
+    .details {
+      display: none;
+      margin-top: 8px;
+      font-size: 13px;
+      border-top: 1px dashed #d8b892;
+      padding-top: 8px;
+      color: #333;
     }
 
-    .node .icon{height:64px;width:64px;border-radius:50%;display:inline-grid;place-items:center;font-weight:800;font-size:22px;margin-bottom:8px;border:3px solid #d8b892;background:#f5e6cc}
-    .node h3{margin:0;font-size:16px;font-weight:bold;color:#5a2a00}
-    .node small{display:block;color:#7a4a1d;margin-top:6px}
+    .god.open .details {
+      display: block;
+    }
 
-    .node:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 12px 30px rgba(0,0,0,0.25)}
+    /* connecting horizontal lines between generations */
+    .connector {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      width: 2px;
+      height: 40px;
+      background: #8b4513;
+      transform: translateX(-50%);
+      z-index: 0;
+    }
 
-    .details{display:none;text-align:left;margin-top:10px;padding-top:10px;border-top:1px dashed #d8b892;color:#333;font-size:13px}
-    .node.open .details{display:block}
+    .level::after {
+      content: "";
+      position: absolute;
+      bottom: -25px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #d8b892;
+      z-index: -1;
+    }
 
-    footer{margin-top:16px;color:#7a4a1d;font-size:13px;text-align:center}
+    .level:last-child::after {
+      display: none;
+    }
 
-    /* Animations */
+    /* Notes section */
+    .notes {
+      background: rgba(255, 248, 240, 0.75);
+      border: 2px dashed #8b4513;
+      border-radius: 12px;
+      padding: 25px;
+      max-width: 1000px;
+      margin: 40px auto;
+      line-height: 1.6em;
+    }
+
+    .notes h2 {
+      color: #5a2a00;
+      margin-top: 20px;
+    }
+
+    .notes ul {
+      list-style-type: "🜂 ";
+      margin-left: 25px;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 13px;
+      color: #7a4a1d;
+      margin-top: 40px;
+    }
+
     @keyframes fadeInDown {
       from { opacity: 0; transform: translateY(-40px); }
       to { opacity: 1; transform: translateY(0); }
@@ -91,156 +178,182 @@
 </head>
 <body>
   <header>
-    <h1>L'art de l'Égypte ancienne</h1>
-    <p>L'Égypte ancienne commence avec l'unification des royaumes de haute et basse-Égypte, créant l'Égypte pharaonique. Celle-ci se divise en 30 dynastie contenant trois grandes périodes:</p>
- <p>L'ancien empire </p>
-<p>Le moyen empire </p>
-<p>Le nouveau empire </p>
-<p>L'organisation est très hiéarvchisée et religieuse. L'art est étroitement lié à leur religion et au pouvoir de pharaons.
+    <h1>🏺 L’art de l’Égypte ancienne</h1>
+    <p>L’Égypte ancienne commence avec l’unification des royaumes de Haute et Basse-Égypte. 
+    L’art égyptien, profondément symbolique, célèbre la religion, la royauté et l’ordre cosmique — la Maât.</p>
   </header>
 
   <div class="notes">
-<h2>La cosmologie d'héliopolis</h2>
-<p><strong>La création du monde</strong></p>
-<p>Au tout début, il n’y avait rien. Pas de ciel, pas de terre, pas de lumière. Seulement le Noun, un océan d’eau sombre, infini et chaotique. De ce néant émergea un dieu créateur : Atoum (ou parfois Rê-Atoum), une divinité qui existait par sa propre volonté.</p>
-<p>Atoum, seul dans le Noun, décida de créer le monde. Il se créa une colline sacrée pour sortir de l’eau, puis il engendra deux enfants :Shou, le dieu de l’air etTefnout, la déesse de l’humidité.Ces deux premiers enfants représentèrent les premiers éléments fondamentaux du monde : l’air et l’humidité. Un jour, Shou et Tefnout se perdirent dans les eaux du Noun. Atoum, inquiet, envoya son œil divin pour les chercher. Lorsqu’ils revinrent, Atoum pleura de joie : ses larmes tombèrent sur la terre, et de ces larmes naquit l’humanité.</p>
-
-<p>Shou et Tefnout donnèrent ensuite naissance à Geb, le dieu de la terre et Nout, la déesse du ciel, mais Geb et Nout étaient trop proches, enlacés. Atoum, mécontent, ordonna à Shou (l’air) de les séparer. Depuis ce jour, Nout s’élève au-dessus, formant le ciel,et Geb repose en dessous, formant la terre,et Shou les maintient séparés, tenant Nout au-dessus de lui.
-Chaque jour, le dieu Soleil, Rê, voyage à travers le ciel dans sa barque solaire, traversant le monde des vivants. La nuit, il passe dans le monde souterrain (le Duat), où il doit lutter contre les forces du chaos, notamment le serpent maléfique Apophis (ou Apep), pour renaître chaque matin.
-Dans cette vision, l’univers repose sur un équilibre sacré, appelé la Maât (vérité, ordre, justice). Tout déséquilibre (comme le chaos, le mensonge ou la violence injuste) menace l’existence même du monde.</p>
-<p><strong>La légende d'osiris</strong></p>
-
-<p>Osiris était un roi aimé de tous. Il enseignait l’agriculture, la justice et la paix aux humains. Sa sœur et épouse, Isis, était une déesse puissante, protectrice et pleine de sagesse. Mais Osiris avait un frère jaloux : Seth, dieu du chaos et du désert. Envieux du pouvoir et de la popularité d'Osiris, Seth décida de s’en débarrasser. Seth élabora un plan. Il fit construire un magnifique sarcophage (un grand cercueil) aux dimensions parfaites... pour Osiris. Lors d’un grand banquet, il proposa que quiconque rentrerait parfaitement dans le coffre pourrait le garder. Osiris, curieux, s’allongea dedans. Aussitôt, Seth et ses complices refermèrent le couvercle, le clouèrent et jetèrent le cercueil dans le Nil.Osiris mourut, et son corps fut emporté loin. Isis, dévastée, se lança à la recherche du corps de son mari. Elle finit par le retrouver, caché dans un arbre au bord du fleuve. Elle le ramena en Égypte et usa de sa magie pour ramener Osiris à la vie... mais seulement pour un temps. Il devint alors le dieu des morts et de l’au-delà, régnant sur le monde souterrain : le Duat.
-Avant de mourir à nouveau, Osiris et Isis eurent un fils : Horus, un dieu à tête de faucon. En grandissant, Horus apprit ce que son oncle Seth avait fait. Il jura de venger son père.
-S’ensuivit un combat épique entre Horus et Seth, qui dura 80 ans selon les textes. Parfois Horus gagnait, parfois Seth reprenait le dessus. À un moment, Seth arracha même un œil à Horus – 
-l’Œil d’Horus, devenu plus tard un puissant symbole de protection en Égypte.Finalement, les dieux décidèrent que Horus avait prouvé sa valeur. Il devint le nouveau roi de l’Égypte, symbole de justice, d’ordre et de pouvoir légitime.</p>
+    <h2>La création du monde et les dieux primordiaux</h2>
+    <p>Au tout début, il n’y avait rien. Pas de ciel, pas de terre, pas de lumière. Seulement le Noun, un océan d’eau sombre, infini et chaotique. De ce néant émergea un dieu créateur : Atoum (ou parfois Rê-Atoum), une divinité qui existait par sa propre volonté.</p> <p>Atoum, seul dans le Noun, décida de créer le monde. Il se créa une colline sacrée pour sortir de l’eau, puis il engendra deux enfants :Shou, le dieu de l’air etTefnout, la déesse de l’humidité.Ces deux premiers enfants représentèrent les premiers éléments fondamentaux du monde : l’air et l’humidité. Un jour, Shou et Tefnout se perdirent dans les eaux du Noun. Atoum, inquiet, envoya son œil divin pour les chercher. Lorsqu’ils revinrent, Atoum pleura de joie : ses larmes tombèrent sur la terre, et de ces larmes naquit l’humanité.</p> <p>Shou et Tefnout donnèrent ensuite naissance à Geb, le dieu de la terre et Nout, la déesse du ciel, mais Geb et Nout étaient trop proches, enlacés. Atoum, mécontent, ordonna à Shou (l’air) de les séparer. Depuis ce jour, Nout s’élève au-dessus, formant le ciel,et Geb repose en dessous, formant la terre,et Shou les maintient séparés, tenant Nout au-dessus de lui. Chaque jour, le dieu Soleil, Rê, voyage à travers le ciel dans sa barque solaire, traversant le monde des vivants. La nuit, il passe dans le monde souterrain (le Duat), où il doit lutter contre les forces du chaos, notamment le serpent maléfique Apophis (ou Apep), pour renaître chaque matin. Dans cette vision, l’univers repose sur un équilibre sacré, appelé la Maât (vérité, ordre, justice). Tout déséquilibre (comme le chaos, le mensonge ou la violence injuste) menace l’existence même du monde.</p> <p><strong>La légende d'osiris</strong></p> <p>Osiris était un roi aimé de tous. Il enseignait l’agriculture, la justice et la paix aux humains. Sa sœur et épouse, Isis, était une déesse puissante, protectrice et pleine de sagesse. Mais Osiris avait un frère jaloux : Seth, dieu du chaos et du désert. Envieux du pouvoir et de la popularité d'Osiris, Seth décida de s’en débarrasser. Seth élabora un plan. Il fit construire un magnifique sarcophage (un grand cercueil) aux dimensions parfaites... pour Osiris. Lors d’un grand banquet, il proposa que quiconque rentrerait parfaitement dans le coffre pourrait le garder. Osiris, curieux, s’allongea dedans. Aussitôt, Seth et ses complices refermèrent le couvercle, le clouèrent et jetèrent le cercueil dans le Nil.Osiris mourut, et son corps fut emporté loin. Isis, dévastée, se lança à la recherche du corps de son mari. Elle finit par le retrouver, caché dans un arbre au bord du fleuve. Elle le ramena en Égypte et usa de sa magie pour ramener Osiris à la vie... mais seulement pour un temps. Il devint alors le dieu des morts et de l’au-delà, régnant sur le monde souterrain : le Duat. Avant de mourir à nouveau, Osiris et Isis eurent un fils : Horus, un dieu à tête de faucon. En grandissant, Horus apprit ce que son oncle Seth avait fait. Il jura de venger son père. S’ensuivit un combat épique entre Horus et Seth, qui dura 80 ans selon les textes. Parfois Horus gagnait, parfois Seth reprenait le dessus. À un moment, Seth arracha même un œil à Horus – l’Œil d’Horus, devenu plus tard un puissant symbole de protection en Égypte.Finalement, les dieux décidèrent que Horus avait prouvé sa valeur. Il devint le nouveau roi de l’Égypte, symbole de justice, d’ordre et de pouvoir légitime</p>
+<div>
+<h3> Les significations des mythes</h3>
+<p>Osiris represente la mort et la renaissance, comme les marees du Nil, son fils, lui represente ainsi la legitimite royale. En effet, tout pharaon est considere comme lincarnation dHorus sur terre. De plus, les egyptiens croyaient a la vie apres a la mort grace au mythe dOrisis.</p>
 </div>
 
-  <section class="tree">
+  </div>
+
+  <!-- ===== FAMILY TREE ===== -->
+  <div class="tree-container">
+
+    <!-- Level 1 -->
+    <div class="level">
+      <div class="god">
+<p> Arbre genealogique des principaux dieux </p>
+        <span class="icon">☀︎</span>
+        <h3>Atoum / Rê</h3>
+        <small>Créateur solaire</small>
+        <div class="details">Dieu primordial, source de toute création. Père de Shou et Tefnout.</div>
+        <div class="connector"></div>
+      </div>
+    </div>
+
+    <!-- Level 2 -->
+    <div class="level">
+      <div class="god">
+        <span class="icon">🜂</span>
+        <h3>Shou</h3>
+        <small>Air</small>
+        <div class="details">Sépare le ciel et la terre, symbole de stabilité.</div>
+        <div class="connector"></div>
+      </div>
+      <div class="god">
+        <span class="icon">💧</span>
+        <h3>Tefnout</h3>
+        <small>Humidité</small>
+        <div class="details">Déesse de la rosée et mère de Geb et Nut.</div>
+        <div class="connector"></div>
+      </div>
+    </div>
+
+    <!-- Level 3 -->
+    <div class="level">
+      <div class="god">
+        <span class="icon">🌿</span>
+        <h3>Geb</h3>
+        <small>Terre</small>
+        <div class="details">Père d’Osiris, Isis, Seth et Nephthys.</div>
+        <div class="connector"></div>
+      </div>
+      <div class="god">
+        <span class="icon">🌌</span>
+        <h3>Nut</h3>
+        <small>Ciel</small>
+        <div class="details">Avalant le soleil chaque soir et le mettant au monde chaque matin.</div>
+        <div class="connector"></div>
+      </div>
+    </div>
+
+    <!-- Level 4 -->
+    <div class="level">
+      <div class="god">
+        <span class="icon">♆</span>
+        <h3>Osiris</h3>
+        <small>Au-delà</small>
+      </div>
+      <div class="god">
+        <span class="icon">✶</span>
+        <h3>Isis</h3>
+        <small>Magie</small>
+      </div>
+      <div class="god">
+        <span class="icon">⚡</span>
+        <h3>Seth</h3>
+        <small>Chaos</small>
+      </div>
+      <div class="god">
+        <span class="icon">✦</span>
+        <h3>Nephthys</h3>
+        <small>Funérailles</small>
+      </div>
+    </div>
+
+    <!-- Level 5 -->
+    <div class="level">
+      <div class="god">
+        <span class="icon">🜃</span>
+        <h3>Horus</h3>
+        <small>Ciel & royauté</small>
+        <div class="details">Fils d’Isis et Osiris, symbole du pharaon vivant.</div>
+      </div>
+    </div>
+
+    <!-- Additional gods -->
+    <div class="level">
+      <div class="god">
+        <span class="icon">⚒️</span>
+        <h3>Ptah</h3>
+        <small>Création artisanale</small>
+      </div>
+      <div class="god">
+        <span class="icon">✒️</span>
+        <h3>Thot</h3>
+        <small>Savoir & écriture</small>
+      </div>
+      <div class="god">
+        <span class="icon">🐺</span>
+        <h3>Anubis</h3>
+        <small>Embaumement</small>
+      </div>
+      <div class="god">
+        <span class="icon">⚖️</span>
+        <h3>Maât</h3>
+        <small>Ordre & justice</small>
+      </div>
+      <div class="god">
+        <span class="icon">🐆</span>
+        <h3>Sekhmet</h3>
+        <small>Guerre & guérison</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Notes Section ===== -->
+  <div class="notes">
+    <h2>Les sculptures</h2>
     <ul>
-      <li>
-        <div class="node" data-name="Atum/Ra">
-          <div class="icon">☀︎</div>
-          <h3>Atum / Ra</h3>
-          <small>Créateur solaire</small>
-          <div class="details">Parfois confondu avec Rê. Géniteur de Shu et Tefnut.</div>
-        </div>
+      <li>Les statues sont idéalisées, representant les pharaons et les dieux, dune maniere plus jeune	.</li>
+      <li>Avait le rôle religieu d'abrité les âmes de ceux qui sont dans l'àu de là. De ce fait, si une statue ou un hiéroglyphe était détruit, considérait cette action comme la chose la plus grave qu'il pouvait arriver à quelqu'un. </li>
+      <li>Corps hiératiques et poses frontales.</li>
+    </ul>
 
-        <div class="children">
-          <div class="child">
-            <div class="node" data-name="Shu">
-              <div class="icon">🜂</div>
-              <h3>Shu</h3>
-              <small>Air</small>
-              <div class="details">Sépare le ciel et la terre.</div>
-            </div>
-          </div>
-
-          <div class="child">
-            <div class="node" data-name="Tefnut">
-              <div class="icon">💧</div>
-              <h3>Tefnut</h3>
-              <small>Humidité</small>
-              <div class="details">Mère de Geb et Nut.</div>
-            </div>
-          </div>
-        </div>
-
-        <ul style="margin-top:18px">
-          <li>
-            <div class="node" data-name="Geb">
-              <div class="icon">🌿</div>
-              <h3>Geb</h3>
-              <small>Terre</small>
-              <div class="details">Père d'Osiris, Isis, Seth et Nephthys.</div>
-            </div>
-
-            <div class="children">
-              <div class="child">
-                <div class="node" data-name="Osiris">
-                  <div class="icon">♆</div>
-                  <h3>Osiris</h3>
-                  <small>Au-delà</small>
-                </div>
-              </div>
-              <div class="child">
-                <div class="node" data-name="Isis">
-                  <div class="icon">✶</div>
-                  <h3>Isis</h3>
-                  <small>Magie</small>
-                </div>
-              </div>
-              <div class="child">
-                <div class="node" data-name="Seth">
-                  <div class="icon">⚡</div>
-                  <h3>Seth</h3>
-                  <small>Chaos</small>
-                </div>
-              </div>
-              <div class="child">
-                <div class="node" data-name="Nephthys">
-                  <div class="icon">✦</div>
-                  <h3>Nephthys</h3>
-                  <small>Funérailles</small>
-                </div>
-              </div>
-            </div>
-
-            <ul style="margin-top:14px">
-              <li>
-                <div class="node" data-name="Horus">
-                  <div class="icon">🜃</div>
-                  <h3>Horus</h3>
-                  <small>Ciel & royauté</small>
-                </div>
-              </li>
-            </ul>
-
-          </li>
+    <h2>Les peintures et bas-reliefs</h2>
+    <ul>
+      <li>Décoraient les tombes et temples.</li>
+      <li>Utilisation de la <strong>fresque sèche</strong>.</li>
+      <li>Il y avait plusieurs règles de représentation : aspective, hiérarchie des tailles, points de vue multiples.</li>
+      <li>quelques couleurs étaient utilisées pour leurs symboliques : quelques exemples 
+        <ul>
+          <li>Vert = vie</li>
+          <li>Noir = fertilité</li>
+          <li>Or = divin</li>
+          <li>Rouge = énergie</li>
+          <li>Blanc = pureté</li>
         </ul>
       </li>
     </ul>
 
-    <div style="display:flex;gap:18px;justify-content:center;margin-top:22px;flex-wrap:wrap">
-      <div class="node" data-name="Ptah">
-        <div class="icon">⚒️</div>
-        <h3>Ptah</h3>
-        <small>Création artisanale</small>
-      </div>
-
-      <div class="node" data-name="Thoth">
-        <div class="icon">✒️</div>
-        <h3>Thoth</h3>
-        <small>Savoir</small>
-      </div>
-
-      <div class="node" data-name="Anubis">
-        <div class="icon">🐺</div>
-        <h3>Anubis</h3>
-        <small>Embaumement</small>
-      </div>
-
-      <div class="node" data-name="Ma'at">
-        <div class="icon">⚖</div>
-        <h3>Ma'at</h3>
-        <small>Ordre</small>
-      </div>
-
-      <div class="node" data-name="Sekhmet">
-        <div class="icon">🐆</div>
-        <h3>Sekhmet</h3>
-        <small>Guerre</small>
-      </div>
-    </div>
-
-  </section>
+    <h2>Arts décoratifs et symbolisme</h2>
+    <ul>
+      <li>Les sarcophages étaient peints  et décorés des scènes religieuses et des activités du défunt.</li>
+      <li>Bijoux d’or et amulettes protectrices (œil oudjat, scarabée, croix ankh).</li>
+      <li>L’art est avant tout religieux, non réaliste.</li>
+      <li>Les dieux combinent formes humaines et animales (symboles de puissance).</li>
+    </ul>
+<h2> L<architecture </h2>
+<li> Les égyptiens étaient surtourt reconnus pour leurs nombreuses inovations dans le domaine de l'architecture:</li>
+<li>Les pyramides - tombeaux monumentaux des pharaons. Leur mode de construction reste encore mystérieux aujour d'hui.</li>
+<li>Les temples</li>
+<li>Les tombes creusées dans la vallée des rois et dans la vallée des reines, décorées de peintures et de hiéroglyphes.</li>
+  </div>
 
   <footer>
-    Clique sur une carte pour voir les détails.
+    <p><a href="index.html" style="color:#5a2a00;text-decoration:none;">← Retour à la ligne du temps</a></p>
+    <p>© 2025 — Projet pédagogique : Introduction à l’histoire de l’art égyptien.</p>
   </footer>
-<h4> Les significations</h4>
+
   <script>
-    document.querySelectorAll('.node').forEach(node => {
+    document.querySelectorAll('.god').forEach(node => {
       node.addEventListener('click', e => {
         e.stopPropagation();
         node.classList.toggle('open');
@@ -249,4 +362,3 @@ l’Œil d’Horus, devenu plus tard un puissant symbole de protection en Égypt
   </script>
 </body>
 </html>
-
