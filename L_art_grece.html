@@ -3,439 +3,245 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Arbre généalogique complet — Dieux grecs (version simple & claire)</title>
-<meta name="description" content="Arbre généalogique complet et pédagogique des dieux grecs — primordiaux, titans, olympiens et secondaires. Cliquez sur un dieu pour lire la description."/>
+<title>Dieux grecs — Liste interactive</title>
 <style>
-  :root{
-    --bg1: #faf5ec;   /* beige papyrus clair */
-    --bg2: #f3e9d8;
+  :root {
+    --bg: #f7f2e8;
     --card: #fffaf0;
-    --accent: #b78f3b; /* doré doux */
-    --line: linear-gradient(180deg,#cfae5f,#a67d32);
-    --muted: #3e3327;
+    --accent: #b78f3b;
     --border: #e0d1b3;
-    --shadow: 0 10px 30px rgba(60,40,20,0.08);
-    --maxw: 1300px;
-    --gap: 28px;
-    --kid-size: 150px;
-    --font-head: Georgia, "Times New Roman", serif;
+    --text: #3e3327;
   }
 
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;font-family:var(--font-head);background:linear-gradient(180deg,var(--bg1),var(--bg2));color:var(--muted);-webkit-font-smoothing:antialiased}
-  .container{max-width:var(--maxw);margin:20px auto;padding:18px}
-  header{display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center}
-  header h1{margin:0;color:var(--accent);font-size:2rem;letter-spacing:0.3px}
-  header p{margin:0;color:#6b5236}
-
-  /* notes area */
-  .notes{margin-top:8px;width:100%;background:linear-gradient(180deg,rgba(255,250,240,0.96),rgba(255,247,235,0.92));border:2px dashed var(--border);padding:14px;border-radius:10px;min-height:110px;text-align:left;color:#5b4630;font-style:italic}
-
-  /* controls */
-  .controls{display:flex;gap:10px;justify-content:center;margin-top:12px}
-  .btn{background:#fff;border:1px solid var(--border);padding:8px 12px;border-radius:8px;cursor:pointer;color:var(--muted);font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
-  .btn:active{transform:translateY(1px)}
-  .small{font-size:13px;color:#6b5537}
-
-  /* main layout: tree + preview panel */
-  .main{display:grid;grid-template-columns: 1fr 340px;gap:20px;margin-top:18px}
-  @media (max-width:1100px){ .main{grid-template-columns:1fr} .preview{order:2} }
-
-  .tree-wrap{background:var(--card);border:2px solid var(--border);padding:18px;border-radius:12px;box-shadow:var(--shadow);overflow:auto}
-  .legend{display:flex;gap:12px;align-items:center;justify-content:center;margin-bottom:8px}
-  .chip{padding:6px 10px;border-radius:999px;background:rgba(183,143,59,0.08);border:1px solid var(--border);font-weight:700;color:var(--accent);font-size:13px}
-
-  /* The tree itself.
-     We support two modes:
-       - .vertical (default): each generation is a row, parents are shown as couples, child drop line descends to children row
-       - .horizontal: the tree rotates visually (simple transform) for a left->right reading (useful as alternate view)
-  */
-  .tree{display:flex;flex-direction:column;gap:var(--gap);align-items:center}
-
-  /* generation row */
-  .generation{display:flex;gap:18px;align-items:flex-start;justify-content:center;position:relative;padding:6px 4px}
-
-  /* group label for sections (Primordiaux / Titans / Olympiens) */
-  .section-label{width:100%;text-align:left;margin:6px 0 0 10px;color:#6c502e;font-weight:800}
-
-  /* couple wrapper draws the horizontal union (parents) and the vertical drop for children */
-  .couple{display:flex;align-items:center;gap:12px;position:relative;padding:0 8px}
-  .couple::before{
-    /* horizontal line joining parents */
-    content:"";position:absolute;left:6px;right:6px;top:50%;height:4px;background:var(--line);border-radius:3px;z-index:0;opacity:0.95;
+  body {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px;
   }
-  .couple .node{z-index:1;background-clip:padding-box}
-  .couple .drop{position:absolute;left:50%;top:100%;transform:translateX(-50%);width:6px;height:48px;background:var(--line);border-radius:3px;z-index:0}
+ 
+ header h1 {
+      text-align: center;
+      font-size: 2.8em;
+      color: #5a2a00;
+      animation: fadeInDown 1.5s ease;
+    }
 
-  /* single parent (no couple) use .solo */
-  .solo{position:relative;margin:0 10px}
-  .solo::after{content:"";position:absolute;left:50%;top:100%;transform:translateX(-50%);width:6px;height:36px;background:var(--line);border-radius:3px}
+    header p {
+      text-align: center;
+      color: #7a4a1d;
+      max-width: 900px;
+      margin: 10px auto 40px auto;
+      line-height: 1.6em;
+ }
 
-  /* node (card) */
-  .node{background:linear-gradient(180deg,#fffdf6,#fff6e6);border:2px solid var(--border);border-radius:10px;padding:12px 10px;min-width:var(--kid-size);max-width:190px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,0.06);cursor:pointer;transition:transform .14s ease,box-shadow .14s}
-  .node:focus{outline:3px solid rgba(183,143,59,0.18)}
-  .node:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(0,0,0,0.12)}
-  .node .name{font-weight:800;color:var(--accent);margin-bottom:6px}
-  .node .role{font-size:13px;color:#6b5537}
-  .node .kid-hint{display:block;margin-top:8px;font-size:12px;color:#7a6040}
 
-  /* children area: where multiple child boxes are placed */
-  .children{display:flex;gap:16px;justify-content:center;align-items:flex-start;position:relative;padding-top:12px}
-  .children::before{
-    /* horizontal line connecting children group (under the parent drop) */
-    content:"";position:absolute;left:6%;right:6%;top:0;height:6px;background:var(--line);border-radius:3px;z-index:0;opacity:0.9;
+  h1 {
+    color: var(--accent);
+    margin-bottom: 20px;
   }
-  .child{position:relative;display:flex;flex-direction:column;align-items:center}
-  .child::before{content:"";position:absolute;left:50%;top:-36px;transform:translateX(-50%);width:6px;height:36px;background:var(--line);border-radius:3px;z-index:0}
 
-  /* small explanatory text between sections to be extra clear for kids */
-  .explain{width:100%;text-align:center;color:#6b5036;font-size:14px;margin-top:-6px}
-
-  /* preview/right panel (like wiki quick look) */
-  .preview{position:sticky;top:18px;border:2px solid var(--border);background:var(--card);padding:14px;border-radius:10px;box-shadow:var(--shadow);height:max-content}
-  .preview h2{margin:0;font-size:18px;color:var(--accent)}
-  .preview .meta{font-size:13px;color:#6b5537;margin:6px 0}
-  .preview .desc{font-size:14px;color:var(--muted);line-height:1.45;white-space:pre-wrap}
-  .preview .small{font-size:13px;color:#8a6f45;margin-top:10px}
-
-  /* layout toggle: horizontal mode (optional) */
-  .horizontal .tree{transform-origin:top left;transform:rotate(-90deg) scale(0.95);filter:contrast(0.98)}
-  .horizontal .node{transform-origin:center} /* keep hover reasonable */
-
-  /* responsive adjustments */
-  @media (max-width:980px){
-    :root{--kid-size:130px}
-    .node{min-width:130px}
+  .container {
+    display: flex;
+    gap: 40px;
+    width: 100%;
+    max-width: 900px;
   }
-  @media (max-width:700px){
-    .children::before{left:2%;right:2%}
-    .couple::before{left:4px;right:4px}
-    .child::before{height:26px;top:-26px}
-    .couple .drop{height:36px}
+
+ .notes {
+      background: rgba(255, 248, 240, 0.75);
+      border: 2px dashed #8b4513;
+      border-radius: 12px;
+      padding: 25px;
+      max-width: 1000px;
+      margin: 40px auto;
+      line-height: 1.6em;
+    }
+
+  .list {
+    flex: 1;
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  }
+
+  .god {
+    padding: 10px;
+    margin-bottom: 6px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: background 0.2s;
+  }
+
+  .god:hover {
+    background: rgba(183,143,59,0.1);
+  }
+
+  .preview {
+    flex: 2;
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  }
+
+  .preview h2 {
+    color: var(--accent);
+    margin-top: 0;
+  }
+
+  .preview p {
+    line-height: 1.5;
   }
 </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>Arbre généalogique — Mythologie grecque (version claire)</h1>
-      <p>Lis de haut en bas : qui est parent de qui. Clique sur un dieu pour voir sa fiche à droite.</p>
-    </header>
+<header>
+<h1>L'art de la grèce antique</h1> </header>
+<div><p>L'antiquité grecque se sépare en trois grandes périodes : de -800 à -480 la période archaïque, de -480 à -323 la période classique et de -323 à -31 la période héllénistique.</p>
+ </div>
+ <div class="notes">
+ <h2> Légende de la mytologie grecque</h2> 
+<p> <h3>🌌 La création du monde selon la mythologie grecque</h3>
 
-    <div class="notes" contenteditable="true" aria-label="Espace de notes">
-      ✍️ Espace pour tes notes de cours — écris ici.
+<li>Au commencement, il n’y avait rien. Aucun ciel, aucune terre, aucune mer. L’univers n’était qu’un abîme insondable, un vide obscur et silencieux : le Chaos. Ce n’était ni un dieu, ni une matière définie, mais une force primitive, informe et sans limite, d’où allait naître toute chose.</li>
+
+<h3>1. Le Chaos primordial et les premières entités</h3>
+
+<li>Du Chaos surgirent les premières puissances primordiales, personnifications des éléments fondamentaux de l’univers :
+
+Gaïa (la Terre), la grande Mère, base solide où la vie allait pouvoir s’installer.
+
+Tartare, gouffre profond et ténébreux, situé sous la terre, demeure des forces obscures et des damnés.
+
+Éros, le dieu de l’Amour primordial, non pas le petit Cupidon ailé, mais une puissance cosmique unissant les éléments et permettant la création.
+
+Érèbe (les Ténèbres) et Nyx (la Nuit), enfants du Chaos, qui engendrèrent à leur tour Héméra (le Jour) et Éther (la Lumière céleste).
+
+Ainsi, la lumière et l’obscurité alternèrent, marquant les premiers rythmes du monde.</li>
+
+<h3>2. L’union de Gaïa et d’Ouranos</h3>
+
+<li>De Gaïa naquit ensuite Ouranos (le Ciel étoilé), qu’elle engendra seule, puis elle s’unit à lui. Ensemble, ils formèrent le couple primordial : la Terre et le Ciel, inséparables, serrés l’un contre l’autre.
+
+De leur union naquirent :
+
+Les Titans, puissants géants incarnant les forces de la nature (Océan, Cronos, Rhéa, Japet, Hypérion, etc.).
+
+Les Cyclopes, êtres à un seul œil, maîtres du feu et de la forge.
+
+Les Hécatonchires, monstres à cent bras et cinquante têtes, symboles du chaos et de la puissance brute.
+
+Mais Ouranos, craignant la force de ses enfants, les emprisonna dans le ventre de leur mère, Gaïa, provoquant en elle une terrible souffrance. Alors, la Terre fomenta une vengeance.</li>
+
+<h3>3. La révolte de Cronos</h3>
+
+<li>Gaïa façonna une faucille de pierre et demanda à ses fils de punir leur père. Seul Cronos, le plus jeune et le plus rusé des Titans, osa accomplir cet acte. Lorsque la nuit tomba, il guetta Ouranos, l’attaqua par surprise et le mutila. Le sang du Ciel féconda la Terre, donnant naissance à de nouvelles créatures :
+
+Les Érinyes (Furies), déesses de la vengeance,
+
+Les Géants, forces colossales de la nature,
+
+Les Méliades, nymphes des frênes.
+
+Du sexe tranché d’Ouranos, tombé dans la mer, jaillit une écume blanche d’où émergea Aphrodite, déesse de la beauté et de l’amour.
+
+Ouranos, déchu, s’éloigna dans les hauteurs, maudissant Cronos : il lui prédit qu’à son tour, un de ses fils le renverserait.</li>
+
+<h3>4. Le règne des Titans et la prophétie</h3>
+
+<li>Cronos devint alors le maître du monde. Aux côtés de sa sœur et épouse Rhéa, il fit régner l’âge d’or, une ère de paix et d’abondance où les hommes vivaient sans douleur ni vieillesse.
+Mais la prophétie d’Ouranos hantait Cronos. Pour échapper à son destin, il dévora chacun de ses enfants dès leur naissance : Hestia, Déméter, Héra, Hadès et Poséidon.
+
+Rhéa, désespérée, décida de sauver son dernier enfant. Elle donna naissance à Zeus en secret, sur l’île de Crète, et confia le nourrisson aux nymphes et à la chèvre Amalthée. À la place du bébé, elle remit à Cronos une pierre emmaillotée, qu’il avala sans se douter de la ruse.</li>
+
+<h3>5. L’avènement de Zeus et la Titanomachie</h3>
+
+<li>Devenu adulte, Zeus revint affronter son père. Aidé de Métis, déesse de la sagesse, il fit boire à Cronos une potion qui le força à vomir ses frères et sœurs. Ensemble, les enfants de Cronos déclarèrent la guerre aux Titans : ce fut la Titanomachie, une lutte cosmique qui dura dix ans.
+
+Les dieux de l’Olympe, conduits par Zeus, reçurent le soutien des Cyclopes (qui forgèrent pour Zeus la foudre) et des Hécatonchires. Les Titans, eux, étaient menés par Atlas et Cronos. Finalement, les dieux triomphèrent, et Zeus précipita les Titans dans le Tartare, gardés par les Hécatonchires.</li>
+
+<h3>6. L’ordre du monde et la naissance de l’humanité</h3>
+
+<li>Après la victoire, Zeus devint le roi des dieux. Il partagea le monde avec ses frères :
+
+Poséidon reçut les mers,
+
+Hadès régna sur le monde souterrain,
+
+Zeus conserva le ciel et la souveraineté sur l’univers.
+
+Gaïa, encore féconde, donna ensuite naissance à de nouvelles créatures, et les dieux façonnèrent les premiers hommes. Selon certains récits, ce fut Prométhée, fils du Titan Japet, qui modela les humains à partir de la terre et de l’eau, leur donnant la forme des dieux.
+
+Mais Zeus, craignant leur arrogance, priva les hommes du feu. Prométhée, compatissant, le vola dans l’Olympe pour le leur rendre. En punition, Zeus enchaîna Prométhée sur un rocher, où un aigle venait lui dévorer le foie chaque jour. Pour punir également l’humanité, il créa Pandore, la première femme, porteuse d’une jarre contenant tous les maux du monde. </p> </li>
+</div>
+ <h2> dieux et significations </h2>
+<div class="container">
+  <div class="list">
+    <div class="god" data-name="Zeus" data-desc="Zeus est le roi des dieux de l’Olympe, maître du ciel et de la foudre.">
+      ⚡ Zeus
     </div>
-
-    <div class="controls">
-      <button class="btn" id="btn-toggle">Basculer en vue horizontale</button>
-      <button class="btn" id="btn-expand">Tout déplier</button>
-      <button class="btn" id="btn-collapse">Tout replier</button>
-      <div class="small">Sections colorées : Primordiaux — Titans — Olympiens — Mineurs</div>
+    <div class="god" data-name="Héra" data-desc="Héra est l’épouse de Zeus, déesse du mariage et de la famille.">
+      👑 Héra
     </div>
-
-    <div class="main" id="main-area">
-      <!-- LEFT: TREE -->
-      <section class="tree-wrap" aria-label="Arbre des dieux">
-        <div class="legend" style="margin-bottom:10px">
-          <div class="chip">Primordiaux</div>
-          <div class="chip">Titans</div>
-          <div class="chip">Olympiens</div>
-          <div class="chip">Autres</div>
-        </div>
-
-        <nav class="tree" id="tree" role="tree" aria-label="Arbre généalogique">
-
-          <!-- === Primordiaux === -->
-          <div class="section-label">Primordiaux</div>
-          <div class="generation" role="group" aria-label="Primordiaux - rang 0">
-            <div class="node solo" data-name="Chaos" data-desc="Chaos — Le vide originel d'où tout commence.">
-              <div class="name">Chaos</div><div class="role">Origine</div>
-            </div>
-          </div>
-
-          <div class="generation" role="group" aria-label="Primordiaux - rang 1">
-            <div class="node" data-name="Nyx" data-desc="Nyx — Déesse de la nuit; très puissante; mère de nombreuses personnifications (comme Hypnos, Thanatos).">
-              <div class="name">Nyx</div><div class="role">Nuit</div>
-            </div>
-
-            <div class="node" data-name="Erebe" data-desc="Érèbe — Personnification des ténèbres, né après Chaos.">
-              <div class="name">Érèbe</div><div class="role">Ténèbres</div>
-            </div>
-
-            <div class="node" data-name="Tartare" data-desc="Tartare — Abîme profond; parfois vu comme un lieu, parfois comme une puissance primordiale.">
-              <div class="name">Tartare</div><div class="role">Abîme</div>
-            </div>
-
-            <div class="node" data-name="ErosPrim" data-desc="Éros (primordial) — Force de liaison, souvent vue comme l'amour primordial qui aide la création.">
-              <div class="name">Éros (primordial)</div><div class="role">Amour</div>
-            </div>
-
-            <div class="node" data-name="Gaia" data-desc="Gaïa — La Terre; la grande maman de tout; elle engendra Ouranos, les Titans, etc.">
-              <div class="name">Gaïa</div><div class="role">Terre</div>
-            </div>
-
-            <div class="node" data-name="Ouranos" data-desc="Ouranos — Le Ciel; époux de Gaïa; père des Titans, Cyclopes et Hécatonchires.">
-              <div class="name">Ouranos</div><div class="role">Ciel</div>
-            </div>
-          </div>
-
-          <div class="explain">→ Gaïa (la Terre) et Ouranos (le Ciel) sont importants : ils auront beaucoup d'enfants, les Titans.</div>
-
-          <!-- === Early sea/related primordials === -->
-          <div class="generation" role="group" aria-label="Primordiaux marins">
-            <div class="node" data-name="Pontus" data-desc="Pontos — Dieu primordial de la mer, enfant de Gaïa.">
-              <div class="name">Pontos</div><div class="role">Mer</div>
-            </div>
-            <div class="node" data-name="Nereus" data-desc="Nérée — Ancien dieu de la mer, parfois appelé 'le Vieil Homme de la Mer'; père des Néréides.">
-              <div class="name">Nérée</div><div class="role">Mer</div>
-            </div>
-            <div class="node" data-name="Thaumas" data-desc="Thaumas — Titan marin; père de la déesse Iris (messagère) et des Harpies dans certaines versions.">
-              <div class="name">Thaumas</div><div class="role">Océan</div>
-            </div>
-            <div class="node" data-name="Phorcys" data-desc="Phorcys — Ancien dieu marin, souvent lié aux monstres marins (Céto, monstres marins).">
-              <div class="name">Phorcys</div><div class="role">Mer & monstres</div>
-            </div>
-            <div class="node" data-name="Ceto" data-desc="Céto — Déesse-mère des monstres marins.">
-              <div class="name">Céto</div><div class="role">Monstres marins</div>
-            </div>
-
-          </div>
-
-          <!-- === Titans (couples show union lines). We display several main couples. === -->
-          <div class="section-label" style="margin-top:4px">Titans (enfants de Gaïa & Ouranos)</div>
-
-          <div class="generation" role="group" aria-label="Titans - rang">
-            <!-- Coeus + Phoebe -->
-            <div class="couple" aria-label="Coeus et Phoebe">
-              <div class="node" data-name="Coeus" data-desc="Coéos — Titan lié à l'intelligence céleste."><div class="name">Coéos</div><div class="role">Sagesse</div></div>
-              <div class="node" data-name="Phoebe" data-desc="Phobé — Titanide, souvent liée à la Lune et aux oracles."><div class="name">Phobé</div><div class="role">Prophétie</div></div>
-              <div class="drop" aria-hidden="true"></div>
-            </div>
-
-            <!-- Hyperion + Theia -->
-            <div class="couple" aria-label="Hyperion et Theia">
-              <div class="node" data-name="Hyperion" data-desc="Hypérion — Titan de la lumière; père d'Hélios, Séléné et Éos."><div class="name">Hypérion</div><div class="role">Lumière</div></div>
-              <div class="node" data-name="Theia" data-desc="Théia — Titanide de la vue et de la brillance."><div class="name">Théia</div><div class="role">Vision</div></div>
-              <div class="drop" aria-hidden="true"></div>
-            </div>
-
-            <!-- Oceanus + Tethys -->
-            <div class="couple" aria-label="Oceanus et Tethys">
-              <div class="node" data-name="Oceanus" data-desc="Océan — Titan qui entoure le monde; père des Océanides."><div class="name">Océan</div><div class="role">Océan</div></div>
-              <div class="node" data-name="Tethys" data-desc="Téthys — Titanide des eaux; mère des nymphes marines."><div class="name">Téthys</div><div class="role">Eaux</div></div>
-              <div class="drop" aria-hidden="true"></div>
-            </div>
-
-            <!-- Cronos + Rhea (central couple) -->
-            <div class="couple" aria-label="Cronos et Rhea" style="margin:0 8px">
-              <div class="node" data-name="Cronos" data-desc="Cronos — Le plus jeune des Titans; renversa Ouranos puis fut renversé par Zeus."><div class="name">Cronos</div><div class="role">Temps / Titan</div></div>
-              <div class="node" data-name="Rhea" data-desc="Rhéa — Titanide; mère des principaux Olympiens (Zeus, Héra, Poséidon, Hestia, Déméter, Hadès)."><div class="name">Rhéa</div><div class="role">Maternité</div></div>
-              <div class="drop" aria-hidden="true"></div>
-            </div>
-
-            <!-- Iapetus + Clymene (example) -->
-            <div class="couple" aria-label="Iapetus et Clymene">
-              <div class="node" data-name="Iapetus" data-desc="Iapet — Titan; père de Prométhée, Atlas et Ménétios."><div class="name">Iapet</div><div class="role">Lignée</div></div>
-              <div class="node" data-name="Clymene" data-desc="Climène — Titanide (selon variantes); mère de Prométhée et Atlas."><div class="name">Climène</div><div class="role">Titanide</div></div>
-              <div class="drop" aria-hidden="true"></div>
-            </div>
-
-            <!-- Mnemosyne alone (mother of the Muses) -->
-            <div class="solo">
-              <div class="node" data-name="Mnemosyne" data-desc="Mnémosyne — Titanide de la mémoire; mère des Muses (avec Zeus)."><div class="name">Mnémosyne</div><div class="role">Mémoire</div></div>
-            </div>
-
-          </div>
-
-          <!-- children of Cronos & Rhea -> Olympiens -->
-          <div class="generation" style="flex-direction:column;gap:6px">
-            <div class="children-line" style="height:8px;background:var(--line);border-radius:4px;max-width:86%;margin:6px auto"></div>
-
-            <div class="children" role="group" aria-label="Enfants de Cronos & Rhea">
-              <div class="child"><div class="node" data-name="Hestia" data-desc="Hestia — Déesse du foyer et de la maison."><div class="name">Hestia</div><div class="role">Foyer</div></div></div>
-              <div class="child"><div class="node" data-name="Demeter" data-desc="Déméter — Déesse des moissons; mère de Perséphone."><div class="name">Déméter</div><div class="role">Agriculture</div></div></div>
-              <div class="child"><div class="node" data-name="Hera" data-desc="Héra — Reine des dieux, déesse du mariage; épouse de Zeus."><div class="name">Héra</div><div class="role">Mariage</div></div></div>
-              <div class="child"><div class="node" data-name="Hades" data-desc="Hadès — Dieu des Enfers; époux de Perséphone."><div class="name">Hadès</div><div class="role">Enfers</div></div></div>
-              <div class="child"><div class="node" data-name="Poseidon" data-desc="Poséidon — Dieu des mers, des tremblements de terre et des chevaux."><div class="name">Poséidon</div><div class="role">Mers</div></div></div>
-              <div class="child"><div class="node" data-name="Zeus" data-desc="Zeus — Roi des dieux; dieu du ciel et du tonnerre."><div class="name">Zeus</div><div class="role">Ciel</div></div></div>
-            </div>
-          </div>
-
-          <div class="explain">→ Les six enfants de Cronos & Rhéa sont les principaux Olympiens : Zeus, Héra, Poséidon, Hadès, Déméter et Hestia.</div>
-
-          <!-- Zeus unions and children (organized as couples) -->
-          <div class="section-label" style="margin-top:6px">Famille de Zeus (exemples de unions et enfants)</div>
-
-          <div class="generation" role="group" aria-label="Zeus + Hera">
-            <!-- Zeus + Hera -->
-            <div class="couple" aria-label="Zeus et Hera">
-              <div class="node" data-name="Zeus" data-desc="Zeus — roi des dieux; multiple unions, père de nombreux dieux et héros."><div class="name">Zeus</div><div class="role">Ciel</div></div>
-              <div class="node" data-name="Hera" data-desc="Héra — épouse principale de Zeus, protectrice du mariage."><div class="name">Héra</div><div class="role">Mariage</div></div>
-              <div class="drop" aria-hidden="true"></div>
-            </div>
-
-            <div class="children" style="margin-top:12px">
-              <div class="child"><div class="node" data-name="Ares" data-desc="Arès — Dieu de la guerre; fils de Zeus et Héra."><div class="name">Arès</div><div class="role">Guerre</div></div></div>
-              <div class="child"><div class="node" data-name="Hebe" data-desc="Hébé — Déesse de la jeunesse; fille de Zeus et Héra."><div class="name">Hébé</div><div class="role">Jeunesse</div></div></div>
-              <div class="child"><div class="node" data-name="Hephaistos" data-desc="Héphaïstos — Forgeron divin; parfois fils de Zeus et Héra (ou de Héra seule)."><div class="name">Héphaïstos</div><div class="role">Forge</div></div></div>
-            </div>
-          </div>
-
-          <!-- Zeus + Leto -> Apollo & Artemis -->
-          <div class="generation" role="group" aria-label="Zeus + Leto">
-            <div class="couple" aria-label="Zeus et Leto">
-              <div class="node" data-name="Zeus2" data-desc="Zeus (voir fiche principale)"><div class="name">Zeus</div><div class="role">Ciel</div></div>
-              <div class="node" data-name="Leto" data-desc="Léto — Mère d'Apollon et Artémis."><div class="name">Léto</div><div class="role">Maternité</div></div>
-              <div class="drop" aria-hidden="true"></div>
-            </div>
-
-            <div class="children" style="margin-top:12px">
-              <div class="child"><div class="node" data-name="Apollo" data-desc="Apollon — Dieu des arts, de la musique, de la prophétie, fils de Zeus et Léto."><div class="name">Apollon</div><div class="role">Arts & prophétie</div></div></div>
-              <div class="child"><div class="node" data-name="Artemis" data-desc="Artémis — Déesse de la chasse et de la lune; sœur jumelle d'Apollon."><div class="name">Artémis</div><div class="role">Chasse</div></div></div>
-            </div>
-          </div>
-
-          <!-- Zeus + Maia -> Hermes -->
-          <div class="generation">
-            <div class="couple">
-              <div class="node" data-name="Zeus3"><div class="name">Zeus</div><div class="role">Ciel</div></div>
-              <div class="node" data-name="Maia" data-desc="Maïa — Une des Pléiades; mère d'Hermès."><div class="name">Maïa</div><div class="role">Nymphe</div></div>
-              <div class="drop" aria-hidden="true"></div>
-            </div>
-            <div class="children" style="margin-top:12px">
-              <div class="child"><div class="node" data-name="Hermes" data-desc="Hermès — Messager des dieux; dieu du commerce, des voyageurs et des voleurs."><div class="name">Hermès</div><div class="role">Messager</div></div></div>
-            </div>
-          </div>
-
-          <!-- Zeus + Semele -> Dionysus -->
-          <div class="generation">
-            <div class="couple">
-              <div class="node" data-name="Zeus4"><div class="name">Zeus</div><div class="role">Ciel</div></div>
-              <div class="node" data-name="Semele" data-desc="Sémélé — Mortelle aimée de Zeus, mère de Dionysos."><div class="name">Sémélé</div><div class="role">Mortelle</div></div>
-              <div class="drop" aria-hidden="true"></div>
-            </div>
-            <div class="children" style="margin-top:12px">
-              <div class="child"><div class="node" data-name="Dionysus" data-desc="Dionysos — Dieu du vin, du théâtre et de l'extase; fils de Zeus et Sémélé."><div class="name">Dionysos</div><div class="role">Vin</div></div></div>
-            </div>
-          </div>
-
-          <!-- Athena (born from Zeus' head after he swallowed Metis) -->
-          <div class="generation" style="margin-top:8px">
-            <div class="solo">
-              <div class="node" data-name="Athena" data-desc="Athéna — Déesse de la sagesse et de la stratégie; née de la tête de Zeus après qu'il ait avalé Métis."><div class="name">Athéna</div><div class="role">Sagesse</div></div>
-            </div>
-          </div>
-
-          <!-- Aphrodite: birth variations -->
-          <div class="generation">
-            <div class="node" data-name="Aphrodite" data-desc="Aphrodite — Déesse de l'amour et de la beauté; selon la version, née de l'écume ou fille de Zeus et Dioné."><div class="name">Aphrodite</div><div class="role">Amour</div></div>
-          </div>
-
-          <!-- Compact row of many minor/related gods (easy for a 6yo: short labels) -->
-          <div class="section-label" style="margin-top:6px">Dieux & figures secondaires (exemples)</div>
-          <div class="generation">
-            <div class="node" data-name="Eros" data-desc="Éros — Petit dieu de l'amour (Cupidon)."><div class="name">Éros</div><div class="role">Amour</div></div>
-            <div class="node" data-name="Eris" data-desc="Éris — Déesse de la discorde."><div class="name">Éris</div><div class="role">Discorde</div></div>
-            <div class="node" data-name="Nike" data-desc="Niké — Déesse de la victoire."><div class="name">Niké</div><div class="role">Victoire</div></div>
-            <div class="node" data-name="Pan" data-desc="Pan — Dieu des bergers, de la nature sauvage et de la musique rustique."><div class="name">Pan</div><div class="role">Nature</div></div>
-            <div class="node" data-name="Asclepius" data-desc="Asclépios — Dieu de la médecine, fils d'Apollon."><div class="name">Asclépios</div><div class="role">Médecine</div></div>
-            <div class="node" data-name="Persephone" data-desc="Perséphone — Fille de Déméter; reine des Enfers, épouse d'Hadès."><div class="name">Perséphone</div><div class="role">Printemps / Enfers</div></div>
-          </div>
-
-          <div style="height:18px;"></div>
-        </nav>
-      </section>
-
-      <!-- RIGHT: preview panel -->
-      <aside class="preview" id="preview" aria-live="polite">
-        <h2 id="pv-title">Clique sur un nom</h2>
-        <div class="meta" id="pv-meta">Fiche rapide</div>
-        <div class="desc" id="pv-desc">Les informations apparaissent ici quand tu cliques sur une divinité. Tu peux garder cette fiche ouverte pour prendre des notes.</div>
-        <div class="small" id="pv-rel"></div>
-      </aside>
+    <div class="god" data-name="Poséidon" data-desc="Poséidon est le dieu des mers, des tempêtes et des tremblements de terre.">
+      🌊 Poséidon
+    </div>
+    <div class="god" data-name="Hadès" data-desc="Hadès règne sur le monde souterrain et les âmes des morts.">
+      💀 Hadès
+    </div>
+    <div class="god" data-name="Athéna" data-desc="Athéna est la déesse de la sagesse, de la stratégie et de la guerre juste.">
+      🕊️ Athéna
+    </div>
+    <div class="god" data-name="Apollon" data-desc="Apollon est le dieu du Soleil, de la musique, de la poésie et de la guérison.">
+      ☀️ Apollon
+    </div>
+    <div class="god" data-name="Artémis" data-desc="Artémis est la déesse de la chasse, de la nature sauvage et de la lune.">
+      🌕 Artémis
+    </div>
+    <div class="god" data-name="Aphrodite" data-desc="Aphrodite est la déesse de l’amour, de la beauté et du désir.">
+      💘 Aphrodite
+    </div>
+    <div class="god" data-name="Hermès" data-desc="Hermès est le messager des dieux, dieu du commerce et des voyageurs.">
+      🕊️ Hermès
+    </div>
+    <div class="god" data-name="Dionysos" data-desc="Dionysos est le dieu du vin, de la fête et du théâtre.">
+      🍇 Dionysos
     </div>
   </div>
 
+  <div class="preview" id="preview">
+    <h2>Clique sur un dieu</h2>
+    <p>Sa description apparaîtra ici.</p>
+  </div>
+</div>
+<h2> Le style archaïque </h2>
+<li> <p> La période archaïque se définit par un éloignement du style égyptien. Les statues ne sont pas encore a leur appogés, on les nommes Kouros (homme) et korè (femme).
+
+ 
+
 <script>
-/* Behavior:
- - Clicking a .node shows its description in the preview panel on the right.
- - Expand / Collapse simply toggles CSS class .open on nodes (we keep it simple).
- - Toggle horizontal rotates the tree slightly (visual alternate).
- - The layout lines (couple/drop/children) visually show parent→child.
-*/
+  const gods = document.querySelectorAll('.god');
+  const preview = document.getElementById('preview');
 
-// Preview elements
-const pvTitle = document.getElementById('pv-title');
-const pvMeta  = document.getElementById('pv-meta');
-const pvDesc  = document.getElementById('pv-desc');
-const pvRel   = document.getElementById('pv-rel');
-
-function showPreview(node){
-  const name = node.dataset.name || node.querySelector('.name')?.textContent || 'Divinité';
-  const desc = node.dataset.desc || node.querySelector('.role')?.textContent || '';
-  pvTitle.textContent = name;
-  pvMeta.textContent = node.querySelector('.role')?.textContent || '';
-  pvDesc.textContent = desc;
-  // relations: minimal mapping for readability for a few nodes (expandable)
-  const relations = {
-    'Zeus': {parents:['Cronos','Rhéa'], children:['Athéna','Apollon','Artémis','Hermès','Dionysos','Arès','Héphaïstos','Hébé','Perséphone (mariage)']},
-    'Cronos': {parents:['Ouranos','Gaïa'], children:['Zeus','Héra','Poséidon','Hadès','Déméter','Hestia']},
-    'Rhéa': {parents:['Ouranos','Gaïa'], children:['Zeus','Héra','Poséidon','Hadès','Déméter','Hestia']},
-    'Gaïa': {parents:['Chaos'], children:['Ouranos','Titans','Cyclopes']},
-    'Ouranos': {parents:['Gaïa']}
-  };
-  const rel = relations[name];
-  if(rel){
-    let text = '';
-    if(rel.parents) text += 'Parents : ' + rel.parents.join(', ') + '. ';
-    if(rel.children) text += 'Enfants : ' + rel.children.join(', ') + '.';
-    pvRel.textContent = text;
-  } else {
-    pvRel.textContent = '';
-  }
-}
-
-// wire nodes
-document.querySelectorAll('.node').forEach(n=>{
-  n.setAttribute('tabindex','0');
-  n.addEventListener('click', e => { e.stopPropagation(); showPreview(n); n.classList.add('open'); });
-  n.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showPreview(n); n.classList.add('open'); }});
-});
-
-// expand / collapse just toggles 'open' class so that if we later add details we can show/hide
-document.getElementById('btn-expand').addEventListener('click', ()=> {
-  document.querySelectorAll('.node').forEach(n=> n.classList.add('open'));
-});
-document.getElementById('btn-collapse').addEventListener('click', ()=> {
-  document.querySelectorAll('.node').forEach(n=> n.classList.remove('open'));
-});
-
-// toggle horizontal visual mode
-const main = document.getElementById('main-area');
-let horizontal = false;
-document.getElementById('btn-toggle').addEventListener('click', ()=>{
-  horizontal = !horizontal;
-  const treeWrap = document.querySelector('.tree-wrap');
-  if(horizontal){
-    treeWrap.classList.add('horizontal');
-    document.getElementById('btn-toggle').textContent = 'Revenir en vue verticale';
-  } else {
-    treeWrap.classList.remove('horizontal');
-    document.getElementById('btn-toggle').textContent = 'Basculer en vue horizontale';
-  }
-});
-
-// click outside nodes to clear preview
-document.addEventListener('click', (e)=>{
-  const isNode = e.target.closest('.node');
-  if(!isNode){
-    pvTitle.textContent = 'Clique sur un nom';
-    pvMeta.textContent = 'Fiche rapide';
-    pvDesc.textContent = 'Les informations apparaissent ici quand tu cliques sur une divinité.';
-    pvRel.textContent = '';
-  }
-});
-
+  gods.forEach(god => {
+    god.addEventListener('click', () => {
+      const name = god.dataset.name;
+      const desc = god.dataset.desc;
+      preview.innerHTML = `<h2>${name}</h2><p>${desc}</p>`;
+      gods.forEach(g => g.style.background = '');
+      god.style.background = 'rgba(183,143,59,0.15)';
+    });
+  });
 </script>
+
 </body>
 </html>
